@@ -11,7 +11,13 @@ import {
   extractReboundEffects,
   identifyTopDrivers,
 } from './services/aggregators';
-import { generateNarrative, generateLimitations } from './services/narrative';
+import {
+  generateNarrative,
+  generateNarrativeAsync,
+  generateLimitations,
+  generateLimitationsAsync,
+} from './services/narrative';
+import { getAIConfig } from './services/aiService';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ECOLOGIC SIMULATOR - Express Server
@@ -34,7 +40,7 @@ app.get('/health', (_req: Request, res: Response) => {
 // Main simulation endpoint
 // ─────────────────────────────────────────────────────────────────────────────
 
-app.post('/api/v1/simulate', (req: Request, res: Response) => {
+app.post('/api/v1/simulate', async (req: Request, res: Response) => {
   try {
     const request = req.body as SimulateRequest;
 
@@ -89,15 +95,32 @@ app.post('/api/v1/simulate', (req: Request, res: Response) => {
     const reboundEffects = extractReboundEffects(finalGraph, propagationResult.nodeOrders, totals);
     const topDrivers = identifyTopDrivers(finalGraph, totals);
 
-    // Step 8: Generate narrative
-    const narrative = generateNarrative({
+    // Step 8: Generate narrative (uses AI if configured, falls back to templates)
+    const narrativeContext = {
       scenario,
       totals,
       firstOrderEffects,
       downstreamEffects,
       reboundEffects,
       topDrivers,
-    });
+    };
+
+    // Run narrative and limitations generation in parallel if AI is enabled
+    const aiConfig = getAIConfig();
+    let narrative: string;
+    let limitations: string[];
+
+    if (aiConfig) {
+      // Use async AI-powered generation
+      [narrative, limitations] = await Promise.all([
+        generateNarrativeAsync(narrativeContext),
+        generateLimitationsAsync(scenario),
+      ]);
+    } else {
+      // Use synchronous template-based generation
+      narrative = generateNarrative(narrativeContext);
+      limitations = generateLimitations(scenario);
+    }
 
     // Step 9: Compile result
     const result: SimulationResult = {
@@ -110,7 +133,7 @@ app.post('/api/v1/simulate', (req: Request, res: Response) => {
       topDrivers,
       narrative,
       assumptions: scenario.assumptions,
-      limitations: generateLimitations(scenario),
+      limitations,
       scenarioType: scenario.scenarioType,
       simulatedAt: new Date().toISOString(),
     };
@@ -208,20 +231,27 @@ app.get('/api/v1/templates/:id', (req: Request, res: Response) => {
 
 // Start server
 app.listen(PORT, () => {
+  const aiConfig = getAIConfig();
+  const aiStatus = aiConfig
+    ? `AI Enabled: ${aiConfig.provider} (${aiConfig.model})`
+    : 'AI Disabled: Set OPENAI_API_KEY or ANTHROPIC_API_KEY to enable';
+
   console.log(`
-╔═══════════════════════════════════════════════════════════╗
-║                                                           ║
-║   🌿 EcoLogic Simulator API                               ║
-║                                                           ║
-║   Server running on http://localhost:${PORT}               ║
-║                                                           ║
-║   Endpoints:                                              ║
-║   • POST /api/v1/simulate    Run simulation               ║
-║   • GET  /api/v1/scenarios   List scenarios               ║
-║   • GET  /api/v1/templates/:id  Template details          ║
-║   • GET  /health             Health check                 ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
++-----------------------------------------------------------+
+|                                                           |
+|   EcoLogic Simulator API                                  |
+|                                                           |
+|   Server running on http://localhost:${PORT}               |
+|                                                           |
+|   Endpoints:                                              |
+|   * POST /api/v1/simulate    Run simulation               |
+|   * GET  /api/v1/scenarios   List scenarios               |
+|   * GET  /api/v1/templates/:id  Template details          |
+|   * GET  /health             Health check                 |
+|                                                           |
+|   ${aiStatus.padEnd(55)}|
+|                                                           |
++-----------------------------------------------------------+
   `);
 });
 
