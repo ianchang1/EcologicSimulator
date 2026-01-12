@@ -94,10 +94,11 @@ Extract the actual items/behaviors mentioned. Don't default to generic values - 
     // Parse AI response
     const parsed = parseAIResponse(response.content);
     if (!parsed) {
+      console.error('[AI Parser] Failed to parse response:', response.content.substring(0, 500));
       return {
         success: false,
         filledDefaults: [],
-        error: 'Failed to parse AI response',
+        error: 'Failed to parse AI response: ' + response.content.substring(0, 200),
       };
     }
 
