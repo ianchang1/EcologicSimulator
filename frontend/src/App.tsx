@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Leaf, Sparkles, TreeDeciduous, Droplets,
-  ArrowRight, Info, AlertTriangle,
-  Bike, ShoppingBag, Recycle, ChefHat
+  Leaf, ArrowRight, AlertCircle,
+  BarChart3, FileText, GitBranch
 } from 'lucide-react';
 import './index.css';
 import type { SimulationResult } from './types';
@@ -38,72 +37,48 @@ function App() {
       if (data.success && data.result) {
         setResult(data.result);
       } else {
-        setError(data.error || 'Something went wrong!');
+        setError(data.error || 'Something went wrong');
       }
-    } catch (err) {
-      setError('Could not connect to the simulation server. Make sure the backend is running!');
+    } catch {
+      setError('Could not connect to the simulation server');
     } finally {
       setLoading(false);
     }
   };
 
   const exampleQueries = [
-    { text: "Switch from beef to chicken twice a week", icon: <ChefHat className="w-5 h-5" /> },
-    { text: "Bike instead of Uber twice a week", icon: <Bike className="w-5 h-5" /> },
-    { text: "What if my city bans plastic bags?", icon: <ShoppingBag className="w-5 h-5" /> },
-    { text: "30% of students use reusable bottles", icon: <Recycle className="w-5 h-5" /> },
+    "Switch from beef to chicken twice a week",
+    "Bike instead of driving to work",
+    "Start composting food waste",
+    "Install solar panels on my roof",
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Animated Background Blobs */}
-      <div className="bg-blob w-96 h-96 bg-meadow-300 top-0 left-0" style={{ animationDelay: '0s' }} />
-      <div className="bg-blob w-80 h-80 bg-ocean-300 top-1/2 right-0" style={{ animationDelay: '2s' }} />
-      <div className="bg-blob w-72 h-72 bg-sunny-300 bottom-0 left-1/3" style={{ animationDelay: '4s' }} />
-
-      {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
-        {/* Header */}
-        <motion.header
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ repeat: Infinity, duration: 4 }}
-            >
-              <Leaf className="w-12 h-12 text-meadow-500" />
-            </motion.div>
-            <h1 className="text-5xl md:text-6xl font-extrabold gradient-text">
-              EcoLogic
-            </h1>
-            <motion.div
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-            >
-              <Sparkles className="w-10 h-10 text-sunny-400" />
-            </motion.div>
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+              <Leaf className="w-5 h-5 text-white" />
+            </div>
+            <h1 className="text-xl font-semibold text-gray-900">EcoLogic</h1>
+            <span className="text-sm text-gray-500 ml-2">Environmental Impact Simulator</span>
           </div>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            See the <span className="font-bold text-meadow-600">invisible chains</span> of cause and effect.
-            <br />
-            Explore how your choices ripple through the environment!
-          </p>
-        </motion.header>
+        </div>
+      </header>
 
-        {/* Input Section */}
+      <main className="max-w-6xl mx-auto px-4 py-8">
+        {/* Search Section */}
         <motion.div
-          className="max-w-3xl mx-auto mb-10"
-          initial={{ opacity: 0, y: 20 }}
+          className="mb-8"
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={{ duration: 0.3 }}
         >
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border border-meadow-200">
-            <label className="block text-lg font-semibold text-slate-700 mb-3">
-              What would happen if...
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              What would you like to explore?
             </label>
             <div className="flex gap-3">
               <input
@@ -111,54 +86,46 @@ function App() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSimulate()}
-                placeholder="I switch from beef to chicken twice a week?"
-                className="flex-1 px-5 py-4 text-lg rounded-2xl border-2 border-meadow-200 focus:border-meadow-400 focus:outline-none focus:ring-4 focus:ring-meadow-100 transition-all"
+                placeholder="e.g., What if I switch from beef to chicken twice a week?"
+                className="flex-1 px-4 py-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
               />
-              <motion.button
+              <button
                 onClick={() => handleSimulate()}
                 disabled={loading || !query.trim()}
-                className="px-8 py-4 bg-gradient-to-r from-meadow-500 to-meadow-600 text-white font-bold text-lg rounded-2xl shadow-lg shadow-meadow-500/30 hover:shadow-xl hover:shadow-meadow-500/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                className="px-6 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               >
                 {loading ? (
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-                  >
-                    <Leaf className="w-6 h-6" />
-                  </motion.div>
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Analyzing...
+                  </span>
                 ) : (
                   <>
-                    Explore <ArrowRight className="w-5 h-5" />
+                    Simulate
+                    <ArrowRight className="w-4 h-4" />
                   </>
                 )}
-              </motion.button>
+              </button>
             </div>
 
             {/* Example Queries */}
-            <div className="mt-4">
-              <p className="text-sm text-slate-500 mb-2">Try these examples:</p>
-              <div className="flex flex-wrap gap-2">
-                {exampleQueries.map((example, i) => (
-                  <motion.button
-                    key={i}
-                    onClick={() => {
-                      setQuery(example.text);
-                      handleSimulate(example.text);
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-ocean-50 to-meadow-50 border border-ocean-200 rounded-full text-sm font-medium text-slate-700 hover:border-meadow-400 hover:shadow-md transition-all"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + i * 0.1 }}
-                  >
-                    {example.icon}
-                    {example.text}
-                  </motion.button>
-                ))}
-              </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="text-sm text-gray-500">Try:</span>
+              {exampleQueries.map((example, i) => (
+                <button
+                  key={i}
+                  onClick={() => {
+                    setQuery(example);
+                    handleSimulate(example);
+                  }}
+                  className="text-sm text-emerald-600 hover:text-emerald-700 hover:underline"
+                >
+                  {example}
+                </button>
+              ))}
             </div>
           </div>
         </motion.div>
@@ -170,11 +137,11 @@ function App() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="max-w-3xl mx-auto mb-6"
+              className="mb-6"
             >
-              <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-3">
-                <AlertTriangle className="w-6 h-6 text-red-500 flex-shrink-0" />
-                <p className="text-red-700">{error}</p>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                <p className="text-sm text-red-700">{error}</p>
               </div>
             </motion.div>
           )}
@@ -185,39 +152,37 @@ function App() {
           {result && (
             <motion.div
               key="results"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -30 }}
-              transition={{ duration: 0.5 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
             >
               {/* Tab Navigation */}
-              <div className="flex justify-center mb-6">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-2 shadow-lg border border-slate-200 flex gap-2">
+              <div className="border-b border-gray-200 mb-6">
+                <nav className="flex gap-8">
                   {[
-                    { id: 'graph', label: 'Cause & Effect', icon: <TreeDeciduous className="w-5 h-5" /> },
-                    { id: 'metrics', label: 'Impact Numbers', icon: <Droplets className="w-5 h-5" /> },
-                    { id: 'story', label: 'The Story', icon: <Info className="w-5 h-5" /> },
+                    { id: 'graph', label: 'Causal Graph', icon: <GitBranch className="w-4 h-4" /> },
+                    { id: 'metrics', label: 'Impact Metrics', icon: <BarChart3 className="w-4 h-4" /> },
+                    { id: 'story', label: 'Analysis', icon: <FileText className="w-4 h-4" /> },
                   ].map((tab) => (
-                    <motion.button
+                    <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                      className={`flex items-center gap-2 px-5 py-3 rounded-xl font-semibold transition-all ${
+                      className={`flex items-center gap-2 px-1 py-4 text-sm font-medium border-b-2 transition-colors ${
                         activeTab === tab.id
-                          ? 'bg-gradient-to-r from-meadow-500 to-ocean-500 text-white shadow-lg'
-                          : 'text-slate-600 hover:bg-slate-100'
+                          ? 'border-emerald-500 text-emerald-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
                     >
                       {tab.icon}
                       {tab.label}
-                    </motion.button>
+                    </button>
                   ))}
-                </div>
+                </nav>
               </div>
 
               {/* Tab Content */}
-              <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                 <AnimatePresence mode="wait">
                   {activeTab === 'graph' && (
                     <motion.div
@@ -225,7 +190,7 @@ function App() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="h-[600px]"
+                      className="h-[550px]"
                     >
                       <CausalGraphView graph={result.graph} propagationSteps={result.propagationSteps} />
                     </motion.div>
@@ -237,7 +202,7 @@ function App() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="p-8"
+                      className="p-6"
                     >
                       <MetricsDisplay
                         totals={result.totals}
@@ -255,7 +220,7 @@ function App() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="p-8"
+                      className="p-6"
                     >
                       <NarrativePanel
                         narrative={result.narrative}
@@ -278,19 +243,18 @@ function App() {
             handleSimulate(scenario.examples[0]);
           }} />
         )}
+      </main>
 
-        {/* Footer */}
-        <footer className="mt-16 text-center text-slate-500 text-sm">
-          <p className="flex items-center justify-center gap-2">
-            <Leaf className="w-4 h-4 text-meadow-500" />
-            EcoLogic Simulator - See the system, not just the choice
-            <Leaf className="w-4 h-4 text-meadow-500" />
+      {/* Footer */}
+      <footer className="border-t border-gray-200 bg-white mt-16">
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          <p className="text-sm text-gray-500 text-center">
+            EcoLogic Simulator - An educational tool for understanding environmental impact chains.
+            <br />
+            <span className="text-xs text-gray-400">Results are estimates for educational purposes only.</span>
           </p>
-          <p className="mt-2 text-xs">
-            Educational tool for systems thinking. Not a prediction engine.
-          </p>
-        </footer>
-      </div>
+        </div>
+      </footer>
     </div>
   );
 }
