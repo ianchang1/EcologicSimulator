@@ -102,6 +102,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let narrative: string;
     let limitations: string[];
 
+    console.log('[Simulate] AI Config:', aiConfig ? `${aiConfig.provider} (${aiConfig.model})` : 'Not configured');
+    console.log('[Simulate] ANTHROPIC_API_KEY set:', !!process.env.ANTHROPIC_API_KEY);
+
     if (aiConfig) {
       // Use AI-powered generation
       [narrative, limitations] = await Promise.all([
