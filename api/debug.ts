@@ -1,8 +1,26 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getAIConfig, generateAINarrative } from '../backend/src/services/aiService';
+import { parseQueryWithAI } from '../backend/src/services/aiParser';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const aiConfig = getAIConfig();
+
+  // Test AI parser if requested
+  if (req.query.parse) {
+    const query = req.query.parse as string;
+    try {
+      const result = await parseQueryWithAI(query);
+      return res.json({
+        query,
+        parseResult: result,
+      });
+    } catch (error) {
+      return res.json({
+        query,
+        parseError: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
 
   // Test AI call if requested
   if (req.query.test === 'true') {
