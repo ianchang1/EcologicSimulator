@@ -1,0 +1,176 @@
+{
+  "examples": [
+    {
+      "id": "beef_to_chicken",
+      "query": "Switch from beef to chicken twice a week",
+      "description": "Food substitution scenario: replacing beef meals with chicken",
+      "expectedOutput": {
+        "scenarioType": "food_substitution",
+        "totals": {
+          "carbon": {
+            "value": -5.24,
+            "unit": "kg CO₂e/week",
+            "interpretation": "Significant reduction primarily from eliminating cattle methane emissions"
+          },
+          "water": {
+            "value": -22200,
+            "unit": "liters/week",
+            "interpretation": "Major water savings due to beef's high water footprint (15,400L/kg vs chicken's 4,325L/kg)"
+          },
+          "waste": {
+            "value": -0.01,
+            "unit": "kg/week",
+            "interpretation": "Minimal waste difference; slightly more packaging with chicken"
+          }
+        },
+        "keyInsights": [
+          "Methane reduction is the biggest driver (~80% of carbon savings)",
+          "Water savings are substantial - equivalent to ~45 showers per week",
+          "Land use decreases significantly (less pasture needed)",
+          "Rebound effect: ~15-30% of savings may be offset by spending saved money elsewhere"
+        ],
+        "firstOrderEffects": [
+          "Beef consumption: -0.5 kg/week",
+          "Chicken consumption: +0.4 kg/week",
+          "Cost savings: +$3.50/week"
+        ],
+        "reboundEffects": [
+          "Rebound spending: May offset 15-30% of carbon savings",
+          "Feed crop demand shifts but doesn't eliminate agricultural impact"
+        ]
+      }
+    },
+    {
+      "id": "uber_to_bike",
+      "query": "Bike instead of Uber twice a week",
+      "description": "Transport substitution scenario: replacing rideshare trips with cycling",
+      "expectedOutput": {
+        "scenarioType": "transport_substitution",
+        "totals": {
+          "carbon": {
+            "value": -4.7,
+            "unit": "kg CO₂e/week",
+            "interpretation": "Direct vehicle emissions avoided plus deadhead miles eliminated"
+          },
+          "water": {
+            "value": -5,
+            "unit": "liters/week",
+            "interpretation": "Minor water savings from reduced fuel production"
+          },
+          "waste": {
+            "value": -0.15,
+            "unit": "kg/week",
+            "interpretation": "Reduced vehicle maintenance waste (oil, tires, parts)"
+          }
+        },
+        "keyInsights": [
+          "Deadhead miles (40% extra driving to pick you up) amplify the savings",
+          "Health co-benefits from exercise are significant but not quantified",
+          "Food intake increase from cycling has a small carbon offset",
+          "Cost savings of ~$25/week could fund other carbon-intensive activities"
+        ],
+        "firstOrderEffects": [
+          "Rideshare trips: -2 trips/week",
+          "Bike trips: +2 trips/week",
+          "Physical activity: +64 minutes/week",
+          "Cost savings: +$24/week"
+        ],
+        "reboundEffects": [
+          "Extra food consumption: +200 kcal/day × 2 = slight offset",
+          "Rebound travel: Saved money may fund additional trips"
+        ]
+      }
+    },
+    {
+      "id": "plastic_bag_ban",
+      "query": "What if my city bans single-use plastic bags?",
+      "description": "Policy scenario: city-wide ban on single-use plastic bags",
+      "expectedOutput": {
+        "scenarioType": "plastic_ban",
+        "totals": {
+          "carbon": {
+            "value": -0.08,
+            "unit": "kg CO₂e/person/week",
+            "interpretation": "Modest per-person reduction; significant at city scale"
+          },
+          "water": {
+            "value": 12,
+            "unit": "liters/person/week",
+            "interpretation": "INCREASE - paper bags are more water-intensive to produce"
+          },
+          "waste": {
+            "value": -0.048,
+            "unit": "kg/person/week",
+            "interpretation": "Less plastic waste, but paper waste increases; net reduction due to biodegradability"
+          }
+        },
+        "keyInsights": [
+          "Paper bags have higher production emissions than plastic (but biodegrade)",
+          "Reusable bags need ~40+ uses to break even on carbon",
+          "Ocean plastic leakage is significantly reduced",
+          "Behavioral change: people forget reusable bags ~20% of the time"
+        ],
+        "firstOrderEffects": [
+          "Plastic bag use: -8 bags/person/week",
+          "Paper bag use: +2.4 bags/person/week",
+          "Reusable bag use: +5.6 uses/person/week"
+        ],
+        "reboundEffects": [
+          "Bag forgetting: ~20% of shopping trips result in purchasing alternative",
+          "Thicker 'reusable' plastic bags may emerge as workaround",
+          "Paper bag production increases water usage"
+        ]
+      }
+    },
+    {
+      "id": "reusable_bottles",
+      "query": "What if 30% of students use reusable water bottles?",
+      "description": "Adoption scenario: partial adoption of reusable bottles in a student population",
+      "expectedOutput": {
+        "scenarioType": "reusable_adoption",
+        "totals": {
+          "carbon": {
+            "value": -0.12,
+            "unit": "kg CO₂e/student/week",
+            "interpretation": "Per-student reduction; multiply by student count for total"
+          },
+          "water": {
+            "value": -8,
+            "unit": "liters/student/week",
+            "interpretation": "Net water savings despite washing water use"
+          },
+          "waste": {
+            "value": -0.08,
+            "unit": "kg/student/week",
+            "interpretation": "Significant plastic waste reduction"
+          }
+        },
+        "keyInsights": [
+          "Break-even point: reusable bottle needs ~20 uses to offset production",
+          "Most students exceed this within first month",
+          "Washing water (~0.5L/wash) is minor compared to bottled water footprint",
+          "Transportation emissions from shipping bottled water are eliminated"
+        ],
+        "firstOrderEffects": [
+          "Disposable bottles: -2.1 bottles/student/week (30% of 7)",
+          "Reusable bottle fills: +2.1 fills/student/week",
+          "Cost savings: ~$5/student/week"
+        ],
+        "reboundEffects": [
+          "Convenience purchases: ~10% of users occasionally buy bottled water",
+          "Water fountain demand increases (positive infrastructure effect)"
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "dataSource": "PLACEHOLDER - Values based on lifecycle assessment literature",
+    "lastUpdated": "2025-01-04",
+    "notes": [
+      "All values are educational estimates, not precise predictions",
+      "Regional variations can significantly affect actual values",
+      "Market-level effects not modeled (assumes individual behavior)",
+      "Confidence varies by metric - see API response for details"
+    ]
+  }
+}

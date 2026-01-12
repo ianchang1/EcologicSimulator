@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Custom Nature-Inspired Colors */
+  --color-meadow-50: #F0FDF4;
+  --color-meadow-100: #DCFCE7;
+  --color-meadow-200: #BBF7D0;
+  --color-meadow-300: #86EFAC;
+  --color-meadow-400: #4ADE80;
+  --color-meadow-500: #22C55E;
+  --color-meadow-600: #16A34A;
+  --color-meadow-700: #15803D;
+  --color-meadow-800: #166534;
+  --color-meadow-900: #14532D;
+
+  --color-ocean-50: #F0F9FF;
+  --color-ocean-100: #E0F2FE;
+  --color-ocean-200: #BAE6FD;
+  --color-ocean-300: #7DD3FC;
+  --color-ocean-400: #38BDF8;
+  --color-ocean-500: #0EA5E9;
+  --color-ocean-600: #0284C7;
+  --color-ocean-700: #0369A1;
+  --color-ocean-800: #075985;
+  --color-ocean-900: #0C4A6E;
+
+  --color-sunny-50: #FFFBEB;
+  --color-sunny-100: #FEF3C7;
+  --color-sunny-200: #FDE68A;
+  --color-sunny-300: #FCD34D;
+  --color-sunny-400: #FBBF24;
+  --color-sunny-500: #F59E0B;
+  --color-sunny-600: #D97706;
+  --color-sunny-700: #B45309;
+  --color-sunny-800: #92400E;
+  --color-sunny-900: #78350F;
+
+  --color-coral-50: #FFF7ED;
+  --color-coral-100: #FFEDD5;
+  --color-coral-200: #FED7AA;
+  --color-coral-300: #FDBA74;
+  --color-coral-400: #FB923C;
+  --color-coral-500: #F97316;
+  --color-coral-600: #EA580C;
+  --color-coral-700: #C2410C;
+
+  --color-lavender-50: #F5F3FF;
+  --color-lavender-100: #EDE9FE;
+  --color-lavender-200: #DDD6FE;
+  --color-lavender-300: #C4B5FD;
+  --color-lavender-400: #A78BFA;
+  --color-lavender-500: #8B5CF6;
+
+  /* Typography */
+  --font-sans: 'Nunito', system-ui, sans-serif;
+}
+
+@keyframes ripple {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes flow {
+  0% { stroke-dashoffset: 20; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 0.4; }
+  100% { transform: scale(0.8); opacity: 0.8; }
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Nunito', system-ui, sans-serif;
+  background: linear-gradient(135deg, #F0FDF4 0%, #E0F2FE 50%, #FFFBEB 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: #1e293b;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F0FDF4;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #86EFAC 0%, #4ADE80 100%);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #4ADE80 0%, #22C55E 100%);
+}
+
+/* React Flow custom styles */
+.react-flow__node {
+  border-radius: 16px !important;
+}
+
+.react-flow__edge-path {
+  stroke-width: 3;
+}
+
+.react-flow__controls {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.react-flow__controls-button {
+  background: white !important;
+  border: none !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.react-flow__controls-button:hover {
+  background: #F0FDF4 !important;
+}
+
+/* Animated background elements */
+.bg-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.3;
+  animation: float 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #22C55E 0%, #0EA5E9 50%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Impact bars */
+.impact-bar {
+  background: linear-gradient(90deg, #22C55E 0%, #4ADE80 100%);
+  border-radius: 9999px;
+  transition: width 0.8s ease-out;
+}
+
+.impact-bar-negative {
+  background: linear-gradient(90deg, #EF4444 0%, #F87171 100%);
+}
+
+/* Node pulse animation */
+.node-pulse {
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Flow animation for edges */
+.edge-flow {
+  stroke-dasharray: 10 5;
+  animation: flow 1s linear infinite;
+}
