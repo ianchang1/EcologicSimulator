@@ -17,7 +17,7 @@ import {
   generateLimitations,
   generateLimitationsAsync,
 } from '../../backend/src/services/narrative';
-import { getAIConfig } from '../../backend/src/services/aiService';
+import { getAIConfig, generateCustomScenarioResponse } from '../../backend/src/services/aiService';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
@@ -47,8 +47,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       if (aiParseResult.success) {
         // Handle custom scenarios (composting, solar panels, etc.)
-        if (aiParseResult.isCustomScenario && aiParseResult.customResponse) {
-          console.log('[Simulate] Custom scenario detected, returning AI-generated response');
+        if (aiParseResult.isCustomScenario && aiParseResult.scenario) {
+          console.log('[Simulate] Custom scenario detected, generating AI response');
+
+          const { baseline, change, frequency, frequencyUnit } = aiParseResult.scenario;
+
+          // Generate narrative and limitations using AI
+          const customResponse = await generateCustomScenarioResponse(
+            baseline,
+            change,
+            frequency,
+            frequencyUnit
+          );
 
           const customResult: SimulationResult = {
             graph: { nodes: [], edges: [] },
@@ -62,9 +72,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             downstreamEffects: [],
             reboundEffects: [],
             topDrivers: [],
-            narrative: aiParseResult.customResponse.narrative,
+            narrative: customResponse.narrative,
             assumptions: [],
-            limitations: aiParseResult.customResponse.limitations,
+            limitations: customResponse.limitations,
             scenarioType: 'food_substitution', // placeholder
             simulatedAt: new Date().toISOString(),
           };
@@ -75,11 +85,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             parseInfo: {
               detectedType: 'custom',
               extractedParams: {
-                baseline: aiParseResult.scenario?.baseline || 'current',
-                change: aiParseResult.scenario?.change || 'new behavior',
-                frequency: aiParseResult.scenario?.frequency || 1,
-                frequencyUnit: aiParseResult.scenario?.frequencyUnit || 'week',
-                adoptionRate: aiParseResult.scenario?.adoptionRate || 1,
+                baseline,
+                change,
+                frequency,
+                frequencyUnit,
+                adoptionRate: aiParseResult.scenario.adoptionRate || 1,
               },
               filledDefaults: aiParseResult.filledDefaults,
               aiParsed: true,

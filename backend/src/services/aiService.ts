@@ -355,8 +355,79 @@ export async function generateAILimitations(
   }
 }
 
+// -----------------------------------------------------------------------------
+// Custom Scenario Generation (for scenarios not in predefined templates)
+// -----------------------------------------------------------------------------
+
+export async function generateCustomScenarioResponse(
+  baseline: string,
+  change: string,
+  frequency: number,
+  frequencyUnit: string
+): Promise<{ narrative: string; limitations: string[] }> {
+  const config = getAIConfig();
+
+  if (!config) {
+    return {
+      narrative: `Switching from "${baseline}" to "${change}" can have various environmental impacts. Without simulation data, we recommend researching specific lifecycle assessments for this change.`,
+      limitations: ['AI service not configured - this is a placeholder response.'],
+    };
+  }
+
+  const systemPrompt = `You are an environmental educator. Generate an engaging, educational response about environmental impacts. Be specific, use numbers when reasonable, and explain cause-and-effect relationships.`;
+
+  const userPrompt = `The user wants to know: "What if I switch from ${baseline} to ${change} (${frequency} times per ${frequencyUnit})?"
+
+Write an environmental impact analysis with these sections:
+1. **Immediate Impacts** - Direct environmental effects (carbon, water, waste)
+2. **Ripple Effects** - Indirect/downstream impacts
+3. **Rebound Effects & Tradeoffs** - Potential downsides or offsetting behaviors
+4. **Key Factors** - What would change these results
+
+Keep it educational, around 250-350 words. Use bullet points for clarity. Include approximate numbers where reasonable.`;
+
+  console.log(`[AI Service] Generating custom scenario narrative for: ${baseline} -> ${change}`);
+
+  let narrativeResponse: AIResponse;
+  if (config.provider === 'openai') {
+    narrativeResponse = await callOpenAI(config, systemPrompt, userPrompt);
+  } else {
+    narrativeResponse = await callAnthropic(config, systemPrompt, userPrompt);
+  }
+
+  // Generate limitations
+  const limitationsPrompt = `Generate 4-5 brief limitations for an environmental impact estimate about switching from "${baseline}" to "${change}". Each should be one sentence, specific to this scenario. Return ONLY a JSON array of strings.`;
+
+  let limitationsResponse: AIResponse;
+  if (config.provider === 'openai') {
+    limitationsResponse = await callOpenAI(config, 'Respond only with a JSON array.', limitationsPrompt);
+  } else {
+    limitationsResponse = await callAnthropic(config, 'Respond only with a JSON array.', limitationsPrompt);
+  }
+
+  let limitations: string[] = ['This is an educational estimate based on general environmental research.'];
+  if (limitationsResponse.success && limitationsResponse.content) {
+    try {
+      const parsed = JSON.parse(limitationsResponse.content);
+      if (Array.isArray(parsed)) {
+        limitations = parsed;
+      }
+    } catch {
+      // Keep default
+    }
+  }
+
+  return {
+    narrative: narrativeResponse.success && narrativeResponse.content
+      ? narrativeResponse.content
+      : `Switching from "${baseline}" to "${change}" can have environmental benefits, but specific impacts depend on many factors including your location, frequency, and alternatives available.`,
+    limitations,
+  };
+}
+
 export default {
   generateAINarrative,
   generateAILimitations,
+  generateCustomScenarioResponse,
   getAIConfig,
 };

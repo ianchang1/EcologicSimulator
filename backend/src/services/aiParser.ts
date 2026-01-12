@@ -44,41 +44,19 @@ export async function parseQueryWithAI(query: string): Promise<AIParseResult> {
     };
   }
 
-  const systemPrompt = `You are an environmental impact query parser. Your job is to understand what environmental change the user is asking about and extract structured parameters.
+  const systemPrompt = `You parse environmental queries into structured data. Respond with ONLY valid JSON, no other text.
 
-Available scenario types:
-- food_substitution: Changing from one food to another (e.g., beef to chicken, meat to vegetarian)
-- transport_substitution: Changing transportation mode (e.g., driving to biking, car to bus)
-- plastic_ban: Reducing single-use plastics (e.g., plastic bags to reusable)
-- reusable_adoption: Switching to reusable items (e.g., disposable bottles to reusable)
-- custom: For any other environmental action that doesn't fit above (e.g., composting, solar panels, reducing AC usage)
+Scenario types:
+- food_substitution: Food changes (beef to chicken, meat to vegetarian)
+- transport_substitution: Transport changes (driving to biking, car to bus)
+- plastic_ban: Reducing plastic bags
+- reusable_adoption: Reusable bottles/containers
+- custom: Everything else (composting, solar, energy, water conservation)
 
-For custom scenarios, you MUST provide a detailed narrative explaining the environmental impact.
+JSON format:
+{"scenarioType":"...","baseline":"from what","change":"to what","frequency":number,"frequencyUnit":"day|week|month|year","adoptionRate":1}`;
 
-Respond ONLY with valid JSON in this exact format:
-{
-  "scenarioType": "food_substitution" | "transport_substitution" | "plastic_ban" | "reusable_adoption" | "custom",
-  "baseline": "what they're switching FROM or current behavior",
-  "change": "what they're switching TO or new behavior",
-  "frequency": number (times per frequencyUnit),
-  "frequencyUnit": "day" | "week" | "month" | "year",
-  "adoptionRate": number between 0 and 1 (1 = 100%),
-  "customNarrative": "REQUIRED if scenarioType is 'custom' - detailed environmental impact explanation with sections for immediate effects, ripple effects, tradeoffs, and what factors would change results. Make it educational and engaging. Around 300-400 words.",
-  "customLimitations": ["REQUIRED if scenarioType is 'custom' - array of 4-6 specific limitations for this scenario"]
-}`;
-
-  const userPrompt = `Parse this environmental query and extract the parameters:
-
-"${query}"
-
-Remember:
-- If the query is about food choices, use food_substitution
-- If about transportation, use transport_substitution
-- If about reducing plastic bags specifically, use plastic_ban
-- If about water bottles or reusable containers, use reusable_adoption
-- For ANYTHING ELSE (composting, energy use, recycling, water conservation, etc.), use "custom" and provide a detailed customNarrative and customLimitations
-
-Extract the actual items/behaviors mentioned. Don't default to generic values - use what the user actually said.`;
+  const userPrompt = `Parse: "${query}"`;
 
   try {
     const response = await callAI(config, systemPrompt, userPrompt);
@@ -104,17 +82,13 @@ Extract the actual items/behaviors mentioned. Don't default to generic values - 
 
     const filledDefaults: string[] = [];
 
-    // Handle custom scenarios
+    // Handle custom scenarios - narrative will be generated separately
     if (parsed.scenarioType === 'custom') {
       return {
         success: true,
         isCustomScenario: true,
-        customResponse: {
-          narrative: parsed.customNarrative || 'Environmental impact analysis not available.',
-          limitations: parsed.customLimitations || ['This is an educational estimate.'],
-        },
         scenario: {
-          scenarioType: 'food_substitution', // placeholder
+          scenarioType: 'food_substitution', // placeholder for type system
           baseline: parsed.baseline,
           change: parsed.change,
           frequency: parsed.frequency,
@@ -233,7 +207,7 @@ async function callAI(
       });
 
       req.on('error', (e) => resolve({ success: false, error: e.message }));
-      req.setTimeout(30000, () => {
+      req.setTimeout(60000, () => {
         req.destroy();
         resolve({ success: false, error: 'Timeout' });
       });
