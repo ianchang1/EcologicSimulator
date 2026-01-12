@@ -9,11 +9,17 @@
     "start": "node dist/index.js",
     "test": "echo \"No tests yet\" && exit 0"
   },
-  "keywords": ["ecology", "simulation", "causal-graph", "systems-thinking"],
+  "keywords": [
+    "ecology",
+    "simulation",
+    "causal-graph",
+    "systems-thinking"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.2.1"
   },
   "devDependencies": {
