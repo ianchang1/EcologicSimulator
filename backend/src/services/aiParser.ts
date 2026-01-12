@@ -196,7 +196,7 @@ async function callAI(
     if (config.provider === 'anthropic') {
       const requestBody = JSON.stringify({
         model: config.model,
-        max_tokens: 2048,
+        max_tokens: 4096,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       });
@@ -248,7 +248,7 @@ async function callAI(
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        max_tokens: 2048,
+        max_tokens: 4096,
         temperature: 0.3, // Lower temperature for more consistent parsing
       });
 
