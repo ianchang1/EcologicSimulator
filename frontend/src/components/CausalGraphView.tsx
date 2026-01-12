@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ReactFlow,
   Controls,
@@ -149,8 +149,8 @@ export default function CausalGraphView({ graph, propagationSteps }: CausalGraph
     return { flowNodes, flowEdges };
   }, [graph, playbackStep, propagationSteps]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(flowNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(flowEdges);
+  const [nodes, , onNodesChange] = useNodesState(flowNodes);
+  const [edges, , onEdgesChange] = useEdgesState(flowEdges);
 
   return (
     <div className="w-full h-full relative">

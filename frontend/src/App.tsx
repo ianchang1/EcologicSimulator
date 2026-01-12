@@ -2,22 +2,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Leaf, Sparkles, TreeDeciduous, Droplets,
-  Trash2, ArrowRight, Info, AlertTriangle,
+  ArrowRight, Info, AlertTriangle,
   Bike, ShoppingBag, Recycle, ChefHat
 } from 'lucide-react';
 import './index.css';
-import type { SimulationResult, ScenarioType } from './types';
+import type { SimulationResult } from './types';
 import CausalGraphView from './components/CausalGraphView';
 import MetricsDisplay from './components/MetricsDisplay';
 import NarrativePanel from './components/NarrativePanel';
 import ScenarioSelector from './components/ScenarioSelector';
-
-const SCENARIO_ICONS: Record<ScenarioType, React.ReactNode> = {
-  food_substitution: <ChefHat className="w-6 h-6" />,
-  transport_substitution: <Bike className="w-6 h-6" />,
-  plastic_ban: <ShoppingBag className="w-6 h-6" />,
-  reusable_adoption: <Recycle className="w-6 h-6" />,
-};
 
 function App() {
   const [query, setQuery] = useState('');

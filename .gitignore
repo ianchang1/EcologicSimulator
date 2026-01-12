@@ -69,3 +69,5 @@ tmpclaude-*
 
 # Optional eslint cache
 .eslintcache
+
+.vercel
