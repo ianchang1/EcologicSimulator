@@ -12,8 +12,11 @@ import {
 } from '../../backend/src/services/aggregators';
 import {
   generateNarrative,
+  generateNarrativeAsync,
   generateLimitations,
+  generateLimitationsAsync,
 } from '../../backend/src/services/narrative';
+import { getAIConfig } from '../../backend/src/services/aiService';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
@@ -85,7 +88,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const reboundEffects = extractReboundEffects(finalGraph, propagationResult.nodeOrders, totals);
     const topDrivers = identifyTopDrivers(finalGraph, totals);
 
-    // Step 8: Generate narrative (template-based for serverless)
+    // Step 8: Generate narrative (AI-powered if configured, otherwise template-based)
     const narrativeContext = {
       scenario,
       totals,
@@ -95,8 +98,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       topDrivers,
     };
 
-    const narrative = generateNarrative(narrativeContext);
-    const limitations = generateLimitations(scenario);
+    const aiConfig = getAIConfig();
+    let narrative: string;
+    let limitations: string[];
+
+    if (aiConfig) {
+      // Use AI-powered generation
+      [narrative, limitations] = await Promise.all([
+        generateNarrativeAsync(narrativeContext),
+        generateLimitationsAsync(scenario),
+      ]);
+    } else {
+      // Fall back to template-based
+      narrative = generateNarrative(narrativeContext);
+      limitations = generateLimitations(scenario);
+    }
 
     // Step 9: Compile result
     const result: SimulationResult = {
